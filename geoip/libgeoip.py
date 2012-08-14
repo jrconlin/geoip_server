@@ -3,8 +3,6 @@ from ctypes import CDLL
 from ctypes.util import find_library
 import settings
 
-class GeoIPException(Exception): pass
-
 # Creating the settings dictionary with any settings, if needed.
 GEOIP_SETTINGS = dict((key, getattr(settings, key))
                       for key in ('GEOIP_PATH', 'GEOIP_LIBRARY_PATH', 'GEOIP_COUNTRY', 'GEOIP_CITY')

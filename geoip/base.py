@@ -1,7 +1,6 @@
 import os
 import re
 from ctypes import c_char_p
-from libgeoip import GeoIPException
 
 #from django.core.validators import ipv4_re
 
@@ -23,6 +22,8 @@ lite_regex = re.compile(r'^GEO-\d{3}LITE')
 ipv4_re = re.compile(r'{(\d{1,3}\.){3}.\d{1,3}')
 
 #### GeoIP classes ####
+
+class GeoIPException(Exception): pass
 
 class GeoIP(object):
     # The flags for GeoIP memory caching.

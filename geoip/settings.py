@@ -11,3 +11,6 @@ MAX_CONNECTS = 500
 #GEOIP_PATH='./local/GeoLiteCity.dat'
 GEOIP_PATH = 'data/'
 
+STATSD_HOST = 'localhost'
+STATSD_PORT = 8125
+STATSD_PREFIX = 'geoip'

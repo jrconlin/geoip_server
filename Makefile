@@ -6,14 +6,20 @@ NO = bin/nosetests -s --with-xunit
 
 all: build
 
-fetch: data/GeoIP.dat
+fetch: data/GeoIP.dat data/GeoLiteCity.dat
+
+data/GeoIP.dat:
 	mkdir -p data
-	pushd data
-	wget "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz"
-	wget "http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz"
-	gzip -d GeoIP.dat.gz
-	gzip -d GeoLiteCity.dat.gz
-	popd
+	wget -P data "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz"
+	gzip -d data/GeoIP.dat.gz
+	cd -
+
+data/GeoLiteCity.dat:
+	mkdir -p data
+	cd data
+	wget -P data "http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz"
+	gzip -d data/GeoLiteCity.dat
+	cd -
 
 build:
 	$(VE) --no-site-packages .

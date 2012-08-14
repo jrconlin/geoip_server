@@ -11,7 +11,7 @@
 from __future__ import absolute_import
 
 try:
-    from .base import GeoIP, GeoIPException
+    from base import GeoIP
     HAS_GEOIP = True
 except:
     HAS_GEOIP = False

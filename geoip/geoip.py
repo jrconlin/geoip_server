@@ -56,6 +56,7 @@ class GeoServer(StreamServer):
             self.geoip = GeoIP(path=config.GEOIP_PATH,
                 cache=GeoIP.GEOIP_MEMORY_CACHE)
             self.log.info('GEOIP starting on port %s...' % config.PORT)
+            self.log.info('GEOIP starting on port %s...' % config.PORT);
         except GeoIPException, e:
             self.log.error("Could not start GeoIP server: %s", str(e))
 

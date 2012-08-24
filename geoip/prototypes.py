@@ -3,6 +3,7 @@ from libgeoip import lgeoip, free
 
 #### GeoIP C Structure definitions ####
 
+
 class GeoIPRecord(Structure):
     _fields_ = [('country_code', c_char_p),
                 ('country_code3', c_char_p),
@@ -21,12 +22,15 @@ class GeoIPRecord(Structure):
                 ('charset', c_int),
                 ('continent_code', c_char_p),
                 ]
-geoip_char_fields = [name for name, ctype in GeoIPRecord._fields_ if ctype is c_char_p]
-geoip_encodings = { 0: 'iso-8859-1',
-                    1: 'utf8',
-                    }
+geoip_char_fields = [name for name,
+        ctype in GeoIPRecord._fields_ if ctype is c_char_p]
+geoip_encodings = {0: 'iso-8859-1',
+                   1: 'utf8',
+                  }
 
-class GeoIPTag(Structure): pass
+
+class GeoIPTag(Structure):
+    pass
 
 RECTYPE = POINTER(GeoIPRecord)
 DBTYPE = POINTER(GeoIPTag)
@@ -45,6 +49,7 @@ else:
 GeoIPRecord_delete = lgeoip.GeoIPRecord_delete
 GeoIPRecord_delete.argtypes = [RECTYPE]
 GeoIPRecord_delete.restype = None
+
 
 # For retrieving records by name or address.
 def check_record(result, func, cargs):
@@ -66,12 +71,14 @@ def check_record(result, func, cargs):
     else:
         return None
 
+
 def record_output(func):
     func.argtypes = [DBTYPE, c_char_p]
     func.restype = RECTYPE
     func.errcheck = check_record
     return func
 GeoIP_record_by_addr = record_output(lgeoip.GeoIP_record_by_addr)
+GeoIP_record_by_addr_v6 = record_output(lgeoip.GeoIP_record_by_addr_v6)
 GeoIP_record_by_name = record_output(lgeoip.GeoIP_record_by_name)
 
 
@@ -82,9 +89,11 @@ GeoIP_delete = lgeoip.GeoIP_delete
 GeoIP_delete.argtypes = [DBTYPE]
 GeoIP_delete.restype = None
 
+
 # This is so the string pointer can be freed within Python.
 class geoip_char_p(c_char_p):
     pass
+
 
 def check_string(result, func, cargs):
     if result:
@@ -98,12 +107,17 @@ GeoIP_database_info = lgeoip.GeoIP_database_info
 GeoIP_database_info.restype = geoip_char_p
 GeoIP_database_info.errcheck = check_string
 
+
 # String output routines.
 def string_output(func):
     func.restype = c_char_p
     return func
 
 GeoIP_country_code_by_addr = string_output(lgeoip.GeoIP_country_code_by_addr)
+GeoIP_country_code_by_addr_v6 = \
+        string_output(lgeoip.GeoIP_country_code_by_addr_v6)
 GeoIP_country_code_by_name = string_output(lgeoip.GeoIP_country_code_by_name)
 GeoIP_country_name_by_addr = string_output(lgeoip.GeoIP_country_name_by_addr)
+GeoIP_country_name_by_addr_v6 = \
+        string_output(lgeoip.GeoIP_country_name_by_addr_v6)
 GeoIP_country_name_by_name = string_output(lgeoip.GeoIP_country_name_by_name)

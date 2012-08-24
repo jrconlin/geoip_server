@@ -29,7 +29,6 @@
 """
 import json
 import logging
-import re
 from base import GeoIPException, GeoIP
 from gevent.pool import Pool
 from gevent.server import StreamServer
@@ -45,8 +44,6 @@ def dotToInt(dottedIp):
 
 class GeoServer(StreamServer):
 
-    ipv4re = re.compile(r'(\d{1,3}\.){3}\d{1,3}')
-
     def __init__(self, listener, config, **kw):
         self.log = logging.getLogger()
         if listener is not None:
@@ -56,7 +53,6 @@ class GeoServer(StreamServer):
             self.geoip = GeoIP(path=config.GEOIP_PATH,
                 cache=GeoIP.GEOIP_MEMORY_CACHE)
             self.log.info('GEOIP starting on port %s...' % config.PORT)
-            self.log.info('GEOIP starting on port %s...' % config.PORT);
         except GeoIPException, e:
             self.log.error("Could not start GeoIP server: %s", str(e))
 

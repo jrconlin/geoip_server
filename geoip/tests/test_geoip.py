@@ -26,12 +26,13 @@ class TestGeoServer(unittest.TestCase):
             }))
 
     def test_valid(self):
-        fake = FakeSocket('get 8.8.8.8\n')
-        self.server.handle(fake, None)
-        value = fake.getvalue().split('\n')[1]
-        resp = json.loads(value)
-        self.failUnless('success' in resp)
-        self.failUnlessEqual(resp['success']['country_code'], 'US')
+        for address in ['63.245.217.20', '2620:101:8008:5::2:7']:
+            fake = FakeSocket('get %s\n' % address)
+            self.server.handle(fake, None)
+            value = fake.getvalue().split('\n')[1]
+            resp = json.loads(value)
+            self.failUnless('success' in resp)
+            self.failUnlessEqual(resp['success']['country_code'], 'US')
 
     def test_bad_command(self):
         fake = FakeSocket('banana\n')

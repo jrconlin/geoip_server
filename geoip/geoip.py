@@ -35,13 +35,6 @@ from gevent.server import StreamServer
 from statsd import statsd
 
 
-def dotToInt(dottedIp):
-    st = ''
-    for octet in dottedIp.split('.'):
-        st += "%02x" % int(octet)
-    return int(st, 16)
-
-
 class GeoServer(StreamServer):
 
     def __init__(self, listener, config, **kw):

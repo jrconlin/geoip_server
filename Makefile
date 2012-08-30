@@ -26,14 +26,14 @@ data/GeoIP.dat:
 
 data/GeoIPv6.dat:
 	mkdir -p data
-	wget -P data "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIPv6.dat.gz"
+	wget -P data "http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz"
 	gzip -d data/GeoIPv6.dat.gz
 	cd -
 
 data/GeoLiteCityv6.dat:
 	mkdir -p data
-	wget -P data "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIPv6.dat.gz"
-	gzip -d data/GeoIPv6.dat.gz
+	wget -P data "http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz"
+	gzip -d data/GeoLiteCityv6.dat.gz
 	cd -
 
 
@@ -44,7 +44,7 @@ data/GeoLiteCity.dat:
 	gzip -d data/GeoLiteCity.dat
 	cd -
 
-build: bin/python
+build:
 	$(VE) --no-site-packages .
 	$(PI) install -r prod-reqs.txt
 	$(PY) setup.py build

@@ -2,7 +2,7 @@ import os
 import re
 from ctypes import c_char_p
 
-from exceptions import GeoIPException
+from gexcept import GeoIPException
 from libgeoip import GEOIP_SETTINGS
 
 from prototypes import (

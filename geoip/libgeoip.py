@@ -2,7 +2,7 @@ import os
 from ctypes import CDLL
 from ctypes.util import find_library
 from settings import GEOIP_SETTINGS
-from exceptions import GeoIPException
+from gexcept import GeoIPException
 
 # Creating the settings dictionary with any settings, if needed.
 lib_path = GEOIP_SETTINGS.get('GEOIP_LIBRARY_PATH', None)

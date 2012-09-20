@@ -8,6 +8,13 @@ HOST = '0.0.0.0'
 PORT = 5309
 MAX_CONNECTS = 500
 
+ZQ_HOST = '*'
+REQ_PORT = 'tcp://%s:5309' % ZQ_HOST
+WORK_PORT = 'tcp://%s:5310' % ZQ_HOST
+ANS_PORT = 'tcp://%s:5311' % ZQ_HOST
+ZQ_TRIES = 2
+ZQ_TIMEOUT = 1
+
 GEOIP_PATH = 'data/'
 # Free data:
 GEOIP_CITY = 'GeoLiteCity.dat'

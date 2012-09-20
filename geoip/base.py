@@ -330,3 +330,9 @@ class GeoIP(object):
     country_code_by_name = country_code
     country_name_by_addr = country_name
     country_name_by_name = country_name
+
+
+def check_attr(kls, value, default):
+    if hasattr(kls, value):
+        return getattr(kls, value)
+    return default

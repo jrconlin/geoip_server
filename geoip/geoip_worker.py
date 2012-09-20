@@ -15,6 +15,7 @@
     a separate service that isolates such faults.
 
     By default, this application runs at localhost on port 5309
+    and uses the 0MQ library
 
     send:
     GET <addr>\n
@@ -29,38 +30,36 @@
 """
 import json
 import logging
-from base import GeoIPException, GeoIP, check_attr
-from gevent.pool import Pool
-from gevent.server import StreamServer
+from base import GeoIPException, GeoIP
 from statsd import statsd
+from worker import Worker
 
 
-class GeoServer(StreamServer):
+class GeoServer(Worker):
 
-    def __init__(self, listener, config, **kw):
-        self.log = logging.getLogger()
-        if listener is not None:
-            super(GeoServer, self).__init__(listener, **kw)
+    def __init__(self, context, requests_addr, replies_addr, config, **kw):
+        super(GeoServer, self).__init__(context, requests_addr, replies_addr)
         self.config = config
+        self.log = logging.getLogger()
         try:
             self.geoip = GeoIP(path=config.GEOIP_PATH,
                 cache=GeoIP.GEOIP_MEMORY_CACHE)
-            self.log.info('GEOIP starting on port %s...' % config.PORT)
+            self.log.info('GEOIP starting %s...' % requests_addr)
         except GeoIPException, e:
             self.log.error("Could not start GeoIP server: %s", str(e))
 
     def _error(self, errstr):
-        if check_attr(self.config, 'DEBUG', False):
+        if hasattr(self.config, 'DEBUG'):
             self.log.error("GEOIP: %s" % errstr)
         return self._return('error', errstr)
 
     def _return(self, label='reply', obj={}):
         reply = json.dumps({label: obj})
-        if check_attr(self.config, 'DEBUG', False):
+        if hasattr(self.config, 'DEBUG'):
             self.log.info("Returning: %s" % reply)
         return "%s\n" % reply
 
-    def checkConnection(self, socket):
+    def checkConnection(self):
         try:
             if self.geoip.country_code('mozilla.org') == 'US':
                 return "200 OK\n"
@@ -68,7 +67,7 @@ class GeoServer(StreamServer):
             self.log.error("Failed Health Check: %s", str(e))
             return "500 Error\n"
 
-    def handle(self, socket, address):
+    def process(self, line):
         if statsd is not None:
             timer = statsd.Timer('GeoIP')
             req_counter = statsd.counter('GeoIP.request')
@@ -81,35 +80,33 @@ class GeoServer(StreamServer):
             success_counter = 0
             fail_counter = 0
         try:
-            sock = socket.makefile()
-            line = sock.readline()
-            req_counter += 1
             if 'monitor' == line.strip():
-                sock.write(self.checkConnection(sock))
-                return sock.flush()
+                return self.checkConnection()
             if ' ' not in line:
-                return sock.write(self._error('Invalid request\nGET addr'))
+                return self._error('Invalid request. Try "GET addr"')
             items = line.split(' ')
             cmd = items[0]
             addr = items[1].strip().replace('/', '')
             if cmd.upper() != 'GET':
-                return sock.write(self._error('Invalid Command\nuse GET '))
+                return self._error('Invalid command. Try "GET addr"')
             if addr is None:
-                return sock.write(self._error('Missing address'))
-            reply = self.geoip.city(addr)
-            if reply is None:
-                fail_counter += 1
-                return sock.write(self._error('No information for site'))
-            else:
+                return self._error('Missing address')
+            try:
+                req_counter += 1
+                reply = self.geoip.city(addr)
+                if reply is None:
+                    fail_counter += 1
+                    return self._error('No information for site')
                 success_counter += 1
                 reply.update({'addr': addr})
-                return sock.write(self._return('success', reply))
-        except Exception, e:
-            return sock.write(self._error("Unknown error: %s %s" % (e, line)))
+                return self._return('success', reply)
+            except Exception, e:
+                fail_counter += 1
+                return self._error('Unknown Exception "%s"' % str(e))
         finally:
             if timer:
                 timer.stop('Request')
-            sock.flush()
+
 
 if __name__ == "__main__":
     try:
@@ -129,7 +126,7 @@ if __name__ == "__main__":
         exit(-1)
 
     logging.basicConfig(stream=settings.LOG_STREAM, level=settings.LOG_LEVEL)
-    pool = Pool(settings.MAX_CONNECTS)
-    server = GeoServer((settings.HOST, settings.PORT),
-                config=settings, spawn=pool)
-    server.serve_forever()
+    GeoServer(context=None,
+            requests_addr=settings.WORK_PORT,
+            replies_addr=settings.ANS_PORT,
+            config=settings).run()

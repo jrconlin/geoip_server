@@ -51,3 +51,8 @@ class TestGeoServer(unittest.TestCase):
         self.server.handle(fake, None)
         value = fake.getvalue().split('\n')[1]
         self.failUnless('error' in value)
+
+    def test_monitor(self):
+        fake = FakeSocket('monitor\n')
+        self.server.handle(fake, None)
+        self.failUnless('200 OK' in fake.getvalue())

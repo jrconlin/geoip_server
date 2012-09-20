@@ -8,12 +8,17 @@
 
 __author__ = "Samuel Tardieu <sam@rfc1149.net>"
 
-import collections, time, uuid, zmq
+import collections
+import time
+import uuid
+import zmq
+
 
 def extract_path(request):
     """Separate routing information and data from an incoming request."""
     i = request.index(b"")
-    return request[:i+1], request[i+1:]
+    return request[:i + 1], request[i + 1:]
+
 
 class Request:
     """A request that has entered the system."""
@@ -47,6 +52,7 @@ class Request:
     def timed_out(self):
         """True if we are past the request execution deadline."""
         return self.deadline is not None and time.time() > self.deadline
+
 
 class Requests:
     """Currently executing requests."""
@@ -120,6 +126,7 @@ class Requests:
         if self.processing:
             return 1000 * max(self.processing[0].deadline - time.time(), 0)
 
+
 class Broker:
     """Broker object with timeout/retry handling."""
 
@@ -180,9 +187,10 @@ class Broker:
         if request_waiting:
             self.poller.unregister(self.workers_query)
 
+
 if __name__ == '__main__':
     import settings
-    b = Broker(zmq.Context(1), settings.TIMEOUT, settings.TRIES,
+    b = Broker(zmq.Context(1), settings.ZQ_TIMEOUT, settings.ZQ_TRIES,
             settings.REQ_PORT, settings.WORK_PORT, settings.ANS_PORT)
     print "Starting broker..."
     b.run()

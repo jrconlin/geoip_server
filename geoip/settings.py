@@ -8,18 +8,11 @@ HOST = '0.0.0.0'
 PORT = 5309
 MAX_CONNECTS = 500
 
-# Start ZeroMQ Values
-ZQ_HOST = '*'
-REQ_PORT = 'tcp://%s:5309' % ZQ_HOST
-# Since workers and the broker tend to be on the same box, no need
-# for the TCP overhead.
-#WORK_PORT = 'tcp://%s:5310' % ZQ_HOST
-#ANS_PORT = 'tcp://%s:5311' % ZQ_HOST
-WORK_PORT = 'ipc:///tmp/geo/w'
-ANS_PORT = 'ipc:///tmp/geo/a'
-ZQ_TRIES = 2
-ZQ_TIMEOUT = 1
-# End ZeroMQ Values
+# Start PowerHose Values
+BACKEND = 'ipc:///tmp/geo_back'
+HEARTBEAT = 'ipc:///tmp/geo_heart'
+FRONTEND = 'ipc:///tmp/geo_front'
+# End PowerHose Values
 
 GEOIP_PATH = 'data/'
 # Free data:

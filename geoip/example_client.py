@@ -3,24 +3,16 @@
 # The following is a simple, thread safe call to the ZMQ broker service.
 # The broker parcels out data to the various workers.
 import json
-import zmq
+from powerhose.client import Client
 
 
 class TestClient():
 
-    def __init__(self, context=None, config=None):
-        if context is not None:
-            self.context = context
-        else:
-            self.context = zmq.Context(1)
-        if config is None:
-            config = dict({})
-        self.sock = self.context.socket(zmq.REQ)
-        self.sock.connect(settings.REQ_PORT)
+    def __init__(self, config=None):
+        self.client = Client(frontend=config.FRONTEND)
 
     def fetch(self, addr):
-        self.sock.send(addr)
-        return json.loads(self.sock.recv())
+        return json.loads(self.client.execute(addr))
 
 
 if __name__ == '__main__':

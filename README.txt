@@ -32,3 +32,21 @@ preferred local package manager:
 libevent-dev
 libgeoip-dev
 
+Installing:
+____
+$make build
+
+Running:
+____
+To run as a stand-alone server:
+$make run_sa
+You can execute on calls to
+http://_host_:5039/_IP Address_
+e.g.
+http://127.0.0.1:5039/63.245.217.20
+
+To run as a Powerhose Client:
+$make run_ph
+
+This will require a powerhose client.
+

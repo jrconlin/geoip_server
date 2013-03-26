@@ -68,3 +68,8 @@ build:
 test:
 	$(NO) $(APPNAME)
 
+run_sa:
+	$(PY) geoip/geoip_sa.py
+
+run_ph:
+	bin/circusd conf/circus.ini

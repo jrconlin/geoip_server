@@ -48,5 +48,7 @@ http://127.0.0.1:5039/63.245.217.20
 To run as a Powerhose Client:
 $make run_ph
 
-This will require a powerhose client.
+This will require a powerhose client. See geoip/example_client.py for
+an example of how to use this. For more info about powerhose see:
+http://powerhose.readthedocs.org/en/0.6/
 
